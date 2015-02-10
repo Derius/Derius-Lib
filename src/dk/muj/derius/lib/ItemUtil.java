@@ -1,6 +1,7 @@
 package dk.muj.derius.lib;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -116,7 +117,7 @@ public class ItemUtil
 		if (item == null) throw new IllegalArgumentException("item mustn't be null");
 		if (item.getType() == Material.AIR) throw new IllegalArgumentException("item mustn't be air");
 		
-		// Since damage applied after encahntmne t modification might be a floating point
+		// Since damage applied after enchantment modification might be a floating point
 		// we make it fair and use probabilityRound.
 		damage = (short) MUtil.probabilityRound(damage / (item.getEnchantmentLevel(Enchantment.DURABILITY) + 1.0));
 		
@@ -183,7 +184,7 @@ public class ItemUtil
 		List<String> itemLore = meta.hasLore() ? meta.getLore() : lore;
 		itemLore.addAll(lore);
 		
-		meta.setLore(lore);
+		meta.setLore(itemLore);
 	}
 	
 	/**
@@ -199,78 +200,116 @@ public class ItemUtil
 		List<String> itemLore = meta.hasLore() ? meta.getLore() : lore;
 		itemLore.removeAll(lore);
 		
-		meta.setLore(lore);
+		meta.setLore(itemLore);
 		item.setItemMeta(meta);
-	}
-	
-	/**
-	 * Uses the lore passed in and either adds or removes it,
-	 * depending on the item.
-	 * @param {ItemStack} the item you want it's lore changed
-	 * @param {List<String} the lore you want to add/remove
-	 */
-	// TODO this is buggy and do we need it?
-	public static void changeLore(ItemStack item, List<String> lore)
-	{
-		if (item == null || lore == null) return;
-		
-		ItemMeta meta = item.getItemMeta();
-		if (meta.hasLore())
-		{
-			List<String> itemLore = meta.getLore();
-			boolean contains = itemLore.containsAll(lore);
-			
-			if ( ! contains)
-			{
-				ItemUtil.addLore(item, lore);
-			}
-			else
-			{
-				ItemUtil.removeLore(item, lore);
-			}
-		}
 	}
 	
 	// -------------------------------------------- //
 	// ENTCHANTMENTS
 	// -------------------------------------------- //
 	
-	//TODO these consuse me
-	
-	public static void addEntchantments(ItemStack item, Map<Enchantment, Integer> entchantments)
+	/**
+	 * Adds enchantments levels to the given item, according to the maps Enchantment and  Integer(level) value
+	 * @param {ItemStack} The item you want the enchantment applied to
+	 * @param {Map<Enchantment, Integer>} The Map of Enchantments with their levels
+	 */
+	public static void addEnchantments(ItemStack item, Map<Enchantment, Integer> entchantments)
 	{
 		if (item == null || entchantments == null) return;
 		
-		Map<Enchantment, Integer> itemEntchantsments= item.getEnchantments();
+		// Save previous enchantment-data of this item
+		Map<Enchantment, Integer> itemEntchantsments = item.getEnchantments();
 		
+		// For each enchantment in the user given map ...
 		for (Enchantment ench : entchantments.keySet())
 		{
+			// get it's level..
 			int level = entchantments.get(ench);
+			
+			// and if the item already has the enchantment we are looking at..
 			if (itemEntchantsments.containsKey(ench))
 			{
+				// Add the level to the Item
 				level = level + itemEntchantsments.get(ench);
+				
+				// remove old enchantment
 				item.removeEnchantment(ench);
 			}
+			
+			// Put the level into effect
 			item.addEnchantment(ench, level);
 		}
 	}
 	
-	public static void removeEntchantment(ItemStack item, Map<Enchantment, Integer> entchantments)
+	/**
+	 * Removes enchantments levels to the given item, according to the maps Enchantment and  Integer(level) value
+	 * @param {ItemStack} The item you want the enchantment applied to
+	 * @param {Map<Enchantment, Integer>} The Map of Enchantments with their levels
+	 */
+	public static void removeEnchantments(ItemStack item, Map<Enchantment, Integer> entchantments)
 	{
 		if (item == null) return;
 		if (entchantments == null) return;
+		
+		// Save previous enchantment-data of this item
 		Map<Enchantment, Integer> itemEntchantsments= item.getEnchantments();
 		
+		// For each enchantment in the user given map ...
 		for (Enchantment ench : entchantments.keySet())
 		{
+			// get it's level..
 			int level = itemEntchantsments.get(ench);
+			
+			// and if the item already has the enchantment we are looking at..
 			if (itemEntchantsments.containsKey(ench))
 			{
+				// subtract the level from the Item
 				level = level - entchantments.get(ench);
+				
+				// remove old enchantment
 				item.removeEnchantment(ench);
 			}
+			
+			// If the level now is zero, don't  add anything new
+			if (level == 0) continue;
+			
+			// Put the level into effect
 			item.addEnchantment(ench, level);
 		}
+	}
+	
+	/**
+	 * Adds a single enchantment to this item, or adds the level of it to the current one.
+	 * @param {ItemStack} The item you want the enchantment applied to
+	 * @param {Enchantment} The enchantment you want to add
+	 * @param {int} the level amount you want to add
+	 */
+	public static void addEnchantment(ItemStack item, Enchantment ench, int level)
+	{
+		if (item == null) return;
+		if (ench == null) return;
+		if (level == 0) return;
+		
+		Map<Enchantment, Integer> entchantments = new HashMap<Enchantment, Integer>();
+		
+		ItemUtil.addEnchantments(item, entchantments);
+	}
+	
+	/**
+	 * Removes a single enchantment to this item, or adds the level of it to the current one.
+	 * @param {ItemStack} The item you want the enchantment removal applied to
+	 * @param {Enchantment} The enchantment you want to remove
+	 * @param {int} the level amount you want to remove
+	 */
+	public static void removeEnchantment(ItemStack item, Enchantment ench, int level)
+	{
+		if (item == null) return;
+		if (ench == null) return;
+		if (level == 0) return;
+		
+		Map<Enchantment, Integer> entchantments = new HashMap<Enchantment, Integer>();
+		
+		ItemUtil.removeEnchantments(item, entchantments);
 	}
 
 }
