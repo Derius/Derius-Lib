@@ -13,11 +13,10 @@ public interface RunnableEvent extends Runnable
 	@Override
 	public default void run()
 	{
-		if ( ! (this instanceof Event)) throw new UnsupportedOperationException("This interface should only be implemented by Bukkit events");
+		if ( ! (this instanceof Event)) throw new IllegalStateException("This interface should only be implemented by Bukkit events");
 		this.preRun();
 		Bukkit.getPluginManager().callEvent((Event) this);
 		this.postRun();
-		if (this instanceof CancellableEvent) CancellableEvent.events.remove(this);
 	}
 	
 	// -------------------------------------------- //
@@ -32,7 +31,11 @@ public interface RunnableEvent extends Runnable
 	{
 		this.run();
 		
-		if (this instanceof Cancellable) return ((Cancellable) this).isCancelled();
+		if (this instanceof Cancellable)
+		{
+			Cancellable i = (Cancellable) this;
+			return ! i.isCancelled();
+		}
 		return true;
 	}
 	
