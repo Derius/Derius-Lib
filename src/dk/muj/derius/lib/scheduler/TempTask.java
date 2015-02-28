@@ -48,7 +48,7 @@ public abstract class TempTask extends ModuloRepeatTask
 		
 		while (this.getPreviousMillis() + this.getDelayMillis() < nowMillis)
 		{
-			if (invocation++ < times)
+			if (invocation++ >= times)
 			{
 				this.deactivate();
 				return;
