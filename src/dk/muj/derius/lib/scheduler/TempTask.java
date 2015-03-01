@@ -1,16 +1,22 @@
 package dk.muj.derius.lib.scheduler;
 
-import com.massivecraft.massivecore.ModuloRepeatTask;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitTask;
+
 
 /**
  * This is another version of RepeatingTask
  * this will however only be
  */
-public abstract class TempTask extends ModuloRepeatTask
+public abstract class TempTask implements Runnable
 {
 	// -------------------------------------------- //
-	// CONSTRUCT
+	// FIELDS
 	// -------------------------------------------- //
+	
+	private BukkitTask task;
+	public Integer getTaskId() { return this.task.getTaskId(); }
 	
 	private final int times;
 	public int getTimes() { return this.times; }
@@ -18,6 +24,15 @@ public abstract class TempTask extends ModuloRepeatTask
 	private int invocation = 0;
 	public int getInvocation() { return this.invocation; }
 	public void setInvocation(int invocation) { this.invocation = invocation; }
+	
+	private long delayMillis;
+	public long getDelayMillis() { return this.delayMillis; }
+	public void setDelayMillis(long delayMillis) { this.delayMillis = delayMillis; }
+	
+	// When did the last invocation occur?
+	private long previousMillis;
+	public long getPreviousMillis() { return this.previousMillis; }
+	public void setPreviousMillis(long previousMillis) { this.previousMillis = previousMillis; }
 	
 	// -------------------------------------------- //
 	// CONSTRUCT
@@ -33,6 +48,21 @@ public abstract class TempTask extends ModuloRepeatTask
 		this.setDelayMillis(delayMillis);
 		this.setPreviousMillis(previousMillis);
 		this.times = times;
+	}
+	
+	// -------------------------------------------- //
+	// ACTIVATION
+	// -------------------------------------------- //
+	
+	public void activate()
+	{
+		task = Bukkit.getScheduler().runTaskTimer(this.getPlugin(), this, 1, 1);
+	}
+
+	public void deactivate()
+	{
+		this.task.cancel();
+		this.task = null;
 	}
 	
 	// -------------------------------------------- //
@@ -56,17 +86,11 @@ public abstract class TempTask extends ModuloRepeatTask
 			
 			long lastMillis = this.getPreviousMillis() + this.getDelayMillis();
 			
-			this.invoke(lastMillis);
+			this.invoke();
 			
 			this.setPreviousMillis(lastMillis);
 		}
 		
-	}
-	
-	@Override
-	public void invoke(long l)
-	{
-		this.invoke();
 	}
 
 	// -------------------------------------------- //
@@ -74,4 +98,5 @@ public abstract class TempTask extends ModuloRepeatTask
 	// -------------------------------------------- //
 	
 	public abstract void invoke();
+	public abstract Plugin getPlugin();
 }
