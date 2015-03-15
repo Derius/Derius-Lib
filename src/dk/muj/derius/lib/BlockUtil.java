@@ -31,7 +31,7 @@ public final class BlockUtil
 	 */
 	public static Set<Block> getSurroundingBlocks(final Block source)
 	{
-		Set<Block> ret = new HashSet<Block>();
+		Set<Block> ret = new HashSet<>();
 		
 		for (BlockFace face : BlockFace.values())
 		{
@@ -49,7 +49,7 @@ public final class BlockUtil
 	 */
 	public static Set<Block> getSurroundingBlocksWith(final Block source, Collection<BlockFace> faces)
 	{
-		Set<Block> ret = new HashSet<Block>();
+		Set<Block> ret = new HashSet<>();
 		
 		for (BlockFace face : faces)
 		{
@@ -67,7 +67,7 @@ public final class BlockUtil
 	 */
 	public static Set<Block> getSurroundingBlocksWithout(final Block source, Collection<BlockFace> faces)
 	{
-		Set<Block> ret = new HashSet<Block>();
+		Set<Block> ret = new HashSet<>();
 		
 		for (BlockFace face : BlockFace.values())
 		{
