@@ -1,6 +1,46 @@
 package dk.muj.derius.lib;
 
-import static org.bukkit.Material.*;
+import static org.bukkit.Material.BOW;
+import static org.bukkit.Material.CARROT_STICK;
+import static org.bukkit.Material.CHAINMAIL_BOOTS;
+import static org.bukkit.Material.CHAINMAIL_CHESTPLATE;
+import static org.bukkit.Material.CHAINMAIL_HELMET;
+import static org.bukkit.Material.CHAINMAIL_LEGGINGS;
+import static org.bukkit.Material.DIAMOND_AXE;
+import static org.bukkit.Material.DIAMOND_BOOTS;
+import static org.bukkit.Material.DIAMOND_CHESTPLATE;
+import static org.bukkit.Material.DIAMOND_HELMET;
+import static org.bukkit.Material.DIAMOND_HOE;
+import static org.bukkit.Material.DIAMOND_LEGGINGS;
+import static org.bukkit.Material.DIAMOND_PICKAXE;
+import static org.bukkit.Material.DIAMOND_SPADE;
+import static org.bukkit.Material.DIAMOND_SWORD;
+import static org.bukkit.Material.FISHING_ROD;
+import static org.bukkit.Material.FLINT_AND_STEEL;
+import static org.bukkit.Material.GOLD_AXE;
+import static org.bukkit.Material.GOLD_BOOTS;
+import static org.bukkit.Material.GOLD_CHESTPLATE;
+import static org.bukkit.Material.GOLD_HELMET;
+import static org.bukkit.Material.GOLD_HOE;
+import static org.bukkit.Material.GOLD_LEGGINGS;
+import static org.bukkit.Material.GOLD_PICKAXE;
+import static org.bukkit.Material.GOLD_SPADE;
+import static org.bukkit.Material.GOLD_SWORD;
+import static org.bukkit.Material.IRON_AXE;
+import static org.bukkit.Material.IRON_BOOTS;
+import static org.bukkit.Material.IRON_CHESTPLATE;
+import static org.bukkit.Material.IRON_HELMET;
+import static org.bukkit.Material.IRON_HOE;
+import static org.bukkit.Material.IRON_LEGGINGS;
+import static org.bukkit.Material.IRON_PICKAXE;
+import static org.bukkit.Material.IRON_SPADE;
+import static org.bukkit.Material.IRON_SWORD;
+import static org.bukkit.Material.SHEARS;
+import static org.bukkit.Material.STONE_AXE;
+import static org.bukkit.Material.STONE_HOE;
+import static org.bukkit.Material.STONE_PICKAXE;
+import static org.bukkit.Material.STONE_SPADE;
+import static org.bukkit.Material.STONE_SWORD;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +52,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.massivecraft.massivecore.Couple;
 import com.massivecraft.massivecore.util.MUtil;
 import com.massivecraft.massivecore.util.Txt;
 
@@ -110,11 +151,15 @@ public class ItemUtil
 	/**
 	 * Applies the specified amount of damage to a tool/armor
 	 * returns true if the item has been broken.
-	 * @param {ItemStack} The item you want to modify
+	 * WARNING, the item doesn't break for some weird reason.
+	 * @param {Getter<ItemStack>} The item you want to modify,
+	 * due to Bukkit untrustable itemstack references, we need to use a getter.
 	 * @param {short} the amount of damage you want to apply to it
-	 * @return {boolean} true if broken afterwards
+	 * @return {Couple<ItemStack, Boolean>} 
+	 * A The itemstack that was modified.
+	 * B true if it is broken now.
 	 */
-	public static boolean applyDamage(ItemStack item, short damage)
+	public static Couple<ItemStack, Boolean> applyDamage(ItemStack item, short damage)
 	{
 		if (damage < 0) throw new IllegalArgumentException("item damage must be positive");
 		// Remember, durability in minecraft counts upwards till it 
@@ -127,11 +172,18 @@ public class ItemUtil
 		damage = (short) MUtil.probabilityRound(damage / (item.getEnchantmentLevel(Enchantment.DURABILITY) + 1.0));
 		
 		short newDurability = (short) (damage + item.getDurability());
-		short maxDurability = ItemUtil.maxDurability(item);
-		
+		short maxDurability = (short) (ItemUtil.maxDurability(item));
+
 		item.setDurability(newDurability);
 		
-		return newDurability >= maxDurability;
+		boolean broke = newDurability >= maxDurability;
+		if (broke)
+		{
+			item.setType(Material.AIR);
+			item.setAmount(0);
+		}
+
+		return new Couple<>(item, broke);
 	}
 	
 	/**
@@ -139,21 +191,23 @@ public class ItemUtil
 	 * returns true if the item has been fully repaired by it.
 	 * @param {ItemStack} The item you want to modify
 	 * @param {short} the amount of damage you want to take from it
-	 * @return {boolean} whether it is fully repaired or not
+	 * @return {Couple<ItemStack, Boolean>} 
+	 * A The itemstack that was modified.
+	 * B true if it is fully repaired now.
 	 */
-	public static boolean reduceDamage(ItemStack item, short reduce)
+	public static Couple<ItemStack, Boolean> reduceDamage(ItemStack item, short damage)
 	{
-		if (item == null || item.getType() == Material.AIR) return false;
-		if (reduce < 0)
-		{
-			reduce = (short) -reduce;
-		}
+		if (damage < 0) throw new IllegalArgumentException("item damage must be positive");
+		// Remember, durability in minecraft counts upwards till it 
+		// reaches the maximum. In this case, it destroys the itemstack.
+		if (item == null) throw new IllegalArgumentException("item mustn't be null");
+		if (item.getType() == Material.AIR) throw new IllegalArgumentException("item mustn't be air");
 		
-		short newDurability = (short) (item.getDurability() - reduce);
-		if (newDurability >= 0) newDurability = 0;
+		short newDurability = (short) (item.getDurability() - damage);
+		newDurability = (short) Math.max(0, newDurability);
 		item.setDurability(newDurability);
 		
-		return newDurability <= 0;
+		return new Couple<>(item, newDurability == 0);
 	}
 
 	public static short maxDurability(ItemStack item)
@@ -162,7 +216,7 @@ public class ItemUtil
 		if ( ! DURABILITY_MAP.containsKey(type))
 		{
 			throw new IllegalArgumentException("Derius does not currently provide info for "
-				+ Txt.getNicedEnum(type) + "\n nag the authors at https://github.com/Derius/Derius-Core/issues");
+				+ Txt.getNicedEnum(type) + "\n if it is a tool, nag the authors at https://github.com/Derius/Derius-Core/issues");
 		}
 		
 		short durability = DURABILITY_MAP.get(type);
