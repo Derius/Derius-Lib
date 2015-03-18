@@ -1,47 +1,5 @@
 package dk.muj.derius.lib;
 
-import static org.bukkit.Material.BOW;
-import static org.bukkit.Material.CARROT_STICK;
-import static org.bukkit.Material.CHAINMAIL_BOOTS;
-import static org.bukkit.Material.CHAINMAIL_CHESTPLATE;
-import static org.bukkit.Material.CHAINMAIL_HELMET;
-import static org.bukkit.Material.CHAINMAIL_LEGGINGS;
-import static org.bukkit.Material.DIAMOND_AXE;
-import static org.bukkit.Material.DIAMOND_BOOTS;
-import static org.bukkit.Material.DIAMOND_CHESTPLATE;
-import static org.bukkit.Material.DIAMOND_HELMET;
-import static org.bukkit.Material.DIAMOND_HOE;
-import static org.bukkit.Material.DIAMOND_LEGGINGS;
-import static org.bukkit.Material.DIAMOND_PICKAXE;
-import static org.bukkit.Material.DIAMOND_SPADE;
-import static org.bukkit.Material.DIAMOND_SWORD;
-import static org.bukkit.Material.FISHING_ROD;
-import static org.bukkit.Material.FLINT_AND_STEEL;
-import static org.bukkit.Material.GOLD_AXE;
-import static org.bukkit.Material.GOLD_BOOTS;
-import static org.bukkit.Material.GOLD_CHESTPLATE;
-import static org.bukkit.Material.GOLD_HELMET;
-import static org.bukkit.Material.GOLD_HOE;
-import static org.bukkit.Material.GOLD_LEGGINGS;
-import static org.bukkit.Material.GOLD_PICKAXE;
-import static org.bukkit.Material.GOLD_SPADE;
-import static org.bukkit.Material.GOLD_SWORD;
-import static org.bukkit.Material.IRON_AXE;
-import static org.bukkit.Material.IRON_BOOTS;
-import static org.bukkit.Material.IRON_CHESTPLATE;
-import static org.bukkit.Material.IRON_HELMET;
-import static org.bukkit.Material.IRON_HOE;
-import static org.bukkit.Material.IRON_LEGGINGS;
-import static org.bukkit.Material.IRON_PICKAXE;
-import static org.bukkit.Material.IRON_SPADE;
-import static org.bukkit.Material.IRON_SWORD;
-import static org.bukkit.Material.SHEARS;
-import static org.bukkit.Material.STONE_AXE;
-import static org.bukkit.Material.STONE_HOE;
-import static org.bukkit.Material.STONE_PICKAXE;
-import static org.bukkit.Material.STONE_SPADE;
-import static org.bukkit.Material.STONE_SWORD;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +12,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.massivecraft.massivecore.Couple;
 import com.massivecraft.massivecore.util.MUtil;
-import com.massivecraft.massivecore.util.Txt;
 
 public class ItemUtil
 {
@@ -70,7 +27,7 @@ public class ItemUtil
 	// -------------------------------------------- //
 	// FIELDS
 	// -------------------------------------------- //
-	
+	/*
 	private static final Map<Material, Short> DURABILITY_MAP = new HashMap<>(); 
 	
 		static
@@ -144,6 +101,7 @@ public class ItemUtil
 			
 		}
 	
+	*/
 	// -------------------------------------------- //
 	// DURABILITY
 	// -------------------------------------------- //
@@ -213,6 +171,7 @@ public class ItemUtil
 	public static short maxDurability(ItemStack item)
 	{
 		Material type = item.getType();
+		/*
 		if ( ! DURABILITY_MAP.containsKey(type))
 		{
 			throw new IllegalArgumentException("Derius does not currently provide info for "
@@ -220,7 +179,8 @@ public class ItemUtil
 		}
 		
 		short durability = DURABILITY_MAP.get(type);
-		return durability;
+		*/
+		return type.getMaxDurability();
 	}
 	
 	// -------------------------------------------- //
