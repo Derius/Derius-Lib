@@ -5,9 +5,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Material;
+import org.bukkit.NetherWartsState;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.material.CocoaPlant;
+import org.bukkit.material.NetherWarts;
+import org.bukkit.material.CocoaPlant.CocoaPlantSize;
 
 public final class BlockUtil
 {
@@ -185,6 +189,32 @@ public final class BlockUtil
 		d2 = d2 % 4;
 		
 		return getWoodVersion(b1) == getWoodVersion(b2) && d1 == d2;
+	}
+
+	// -------------------------------------------- //
+	// Growth checking
+	// -------------------------------------------- //
+	
+	public static boolean isGrowthStateFull(BlockState state)
+	{
+		 switch (state.getType())
+		 {
+			// These are the special cases to check for
+			case CARROT:
+			case CROPS:
+			case POTATO:
+				return state.getRawData() == (byte) 7;
+				 
+			case NETHER_WARTS:
+				return ((NetherWarts) state.getData()).getState() == NetherWartsState.RIPE;
+
+			case COCOA:
+				return ((CocoaPlant) state.getData()).getSize() == CocoaPlantSize.LARGE;
+				 
+			// Normally, it is true. The rest gets taken care of by the block placement storage
+			default:
+				return true;
+		 }
 	}
 	
 }
