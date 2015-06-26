@@ -23,85 +23,7 @@ public class ItemUtil
 	{
 		
 	}
-	
-	// -------------------------------------------- //
-	// FIELDS
-	// -------------------------------------------- //
-	/*
-	private static final Map<Material, Short> DURABILITY_MAP = new HashMap<>(); 
-	
-		static
-		{
-			// Leather Items	
-			DURABILITY_MAP.put(Material.LEATHER_HELMET, (short) 56);
-			DURABILITY_MAP.put(Material.LEATHER_CHESTPLATE, (short) 81);
-			DURABILITY_MAP.put(Material.LEATHER_LEGGINGS, (short) 76);
-			DURABILITY_MAP.put(Material.LEATHER_BOOTS, (short) 60);
-			
-			// Wood Items
-			DURABILITY_MAP.put(Material.WOOD_SWORD, (short) 60);
-			DURABILITY_MAP.put(Material.WOOD_AXE, (short) 60);
-			DURABILITY_MAP.put(Material.WOOD_SPADE, (short) 60);
-			DURABILITY_MAP.put(Material.WOOD_PICKAXE, (short) 60);
-			DURABILITY_MAP.put(Material.WOOD_HOE, (short) 60);
 
-			
-			// Gold Items
-			DURABILITY_MAP.put(GOLD_HELMET, (short) 78);
-			DURABILITY_MAP.put(GOLD_CHESTPLATE, (short) 113);
-			DURABILITY_MAP.put(GOLD_LEGGINGS, (short) 106);
-			DURABILITY_MAP.put(GOLD_BOOTS, (short) 92);
-			DURABILITY_MAP.put(GOLD_SWORD, (short) 33);
-			DURABILITY_MAP.put(GOLD_AXE, (short) 33);
-			DURABILITY_MAP.put(GOLD_SPADE, (short) 33);
-			DURABILITY_MAP.put(GOLD_PICKAXE, (short) 33);
-			DURABILITY_MAP.put(GOLD_HOE, (short) 33);
-
-			// Chainmail Items
-			DURABILITY_MAP.put(CHAINMAIL_HELMET, (short) 166);
-			DURABILITY_MAP.put(CHAINMAIL_CHESTPLATE, (short) 241);
-			DURABILITY_MAP.put(CHAINMAIL_LEGGINGS, (short) 226);
-			DURABILITY_MAP.put(CHAINMAIL_BOOTS, (short) 196);
-			
-			// Stone Items
-			DURABILITY_MAP.put(STONE_SWORD, (short) 132);
-			DURABILITY_MAP.put(STONE_AXE, (short) 132);
-			DURABILITY_MAP.put(STONE_SPADE, (short) 132);
-			DURABILITY_MAP.put(STONE_PICKAXE, (short) 132);
-			DURABILITY_MAP.put(STONE_HOE, (short) 132);
-			
-			// Iron Items
-			DURABILITY_MAP.put(IRON_HELMET, (short) 166);
-			DURABILITY_MAP.put(IRON_CHESTPLATE, (short) 241);
-			DURABILITY_MAP.put(IRON_LEGGINGS, (short) 226);
-			DURABILITY_MAP.put(IRON_BOOTS, (short) 196);
-			DURABILITY_MAP.put(IRON_SWORD, (short) 251);
-			DURABILITY_MAP.put(IRON_AXE, (short) 251);
-			DURABILITY_MAP.put(IRON_SPADE, (short) 251);
-			DURABILITY_MAP.put(IRON_PICKAXE, (short) 251);
-			DURABILITY_MAP.put(IRON_HOE, (short) 251);
-			
-			// Diamond Items
-			DURABILITY_MAP.put(DIAMOND_HELMET, (short) 364);
-			DURABILITY_MAP.put(DIAMOND_CHESTPLATE, (short) 529);
-			DURABILITY_MAP.put(DIAMOND_LEGGINGS, (short) 496);
-			DURABILITY_MAP.put(DIAMOND_BOOTS, (short) 430);
-			DURABILITY_MAP.put(DIAMOND_SWORD, (short) 1562);
-			DURABILITY_MAP.put(DIAMOND_AXE, (short) 1562);
-			DURABILITY_MAP.put(DIAMOND_SPADE, (short) 1562);
-			DURABILITY_MAP.put(DIAMOND_PICKAXE, (short) 1562);
-			DURABILITY_MAP.put(DIAMOND_HOE, (short) 1562);
-
-			// Misc Items
-			DURABILITY_MAP.put(CARROT_STICK, (short) 26);
-			DURABILITY_MAP.put(SHEARS, (short) 239);
-			DURABILITY_MAP.put(FLINT_AND_STEEL, (short) 65);
-			DURABILITY_MAP.put(FISHING_ROD, (short) 65);
-			DURABILITY_MAP.put(BOW, (short) 385);
-			
-		}
-	
-	*/
 	// -------------------------------------------- //
 	// DURABILITY
 	// -------------------------------------------- //
@@ -168,19 +90,15 @@ public class ItemUtil
 		return new Couple<>(item, newDurability == 0);
 	}
 
+	@Deprecated
+	/**
+	 * Use Material#getMaxDurability() instead.
+	 * @param item
+	 * @return
+	 */
 	public static short maxDurability(ItemStack item)
 	{
-		Material type = item.getType();
-		/*
-		if ( ! DURABILITY_MAP.containsKey(type))
-		{
-			throw new IllegalArgumentException("Derius does not currently provide info for "
-				+ Txt.getNicedEnum(type) + "\n if it is a tool, nag the authors at https://github.com/Derius/Derius-Core/issues");
-		}
-		
-		short durability = DURABILITY_MAP.get(type);
-		*/
-		return type.getMaxDurability();
+		return item.getType().getMaxDurability();
 	}
 	
 	// -------------------------------------------- //
@@ -275,15 +193,17 @@ public class ItemUtil
 		
 		// For each enchantment in the user given map ...
 		for (Enchantment ench : entchantments.keySet())
-		{
-			// get it's level..
-			int level = itemEntchantsments.get(ench);
+		{	
+			int level = 0;
 			
 			// and if the item already has the enchantment we are looking at..
 			if (itemEntchantsments.containsKey(ench))
 			{
+				// get it's level..
+				level = itemEntchantsments.get(ench);
+				
 				// subtract the level from the Item
-				level = level - entchantments.get(ench);
+				level -= entchantments.get(ench);
 				
 				// remove old enchantment
 				item.removeEnchantment(ench);

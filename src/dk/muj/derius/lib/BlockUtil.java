@@ -100,7 +100,6 @@ public final class BlockUtil
 	public static boolean isLog(BlockState compared) { return isLog(compared.getType()); }
 	public static boolean isLog(Block compared) { return isLog(compared.getState()); }
 
-	
 	public static boolean isLeave(Material compared)
 	{
 		return compared == Material.LEAVES || compared == Material.LEAVES_2;
@@ -166,17 +165,8 @@ public final class BlockUtil
 		if (compared == Material.LOG_2 || compared == Material.LEAVES_2) return 2;
 		throw new IllegalArgumentException("passed material is not a log or leave");
 	}
-
-	public static int getWoodVersion(BlockState compared)
-	{
-		return getWoodVersion(compared.getType());
-	}
-	
-	
-	public static int getWoodVersion(Block compared)
-	{
-		return getWoodVersion(compared.getState());
-	}
+	public static int getWoodVersion(BlockState compared) { return getWoodVersion(compared.getType()); }
+	public static int getWoodVersion(Block compared) { return getWoodVersion(compared.getState()); }
 	
 	public static boolean isSameWoodType(BlockState b1, BlockState b2)
 	{

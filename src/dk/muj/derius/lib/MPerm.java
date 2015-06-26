@@ -38,8 +38,8 @@ public interface MPerm
 		Permission rankOp= new Permission(startNode + "kit.rank.op", "rank 3 derius kit", PermissionDefault.OP);
 		Permission rankDef = new Permission(startNode + "kit.default", "default derius kit", PermissionDefault.TRUE);
 
+		Permission[] ranks = new Permission[highestKit+1];
 		
-		Permission[] ranks = new Permission[highestKit+1];		
 		// Rank kits
 		for (int i = highestKit ; i >= 0; i--)
 		{
@@ -68,4 +68,5 @@ public interface MPerm
 		// Ops have full access
 		rankFull.addParent(rankOp, true);
 	}
+	
 }

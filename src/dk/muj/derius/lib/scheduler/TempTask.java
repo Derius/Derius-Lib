@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
-
 /**
  * This is another version of RepeatingTask
  * this will however only be
@@ -99,4 +98,5 @@ public abstract class TempTask implements Runnable
 	
 	public abstract void invoke();
 	public abstract Plugin getPlugin();
+	
 }
